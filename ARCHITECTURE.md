@@ -684,13 +684,36 @@ sequenceDiagram
   - The frontend is fully decoupled from the backend — connects via REST API calls.
   - Modular JS files make it easy to extend or refactor later.
 
-### Phase 6 – Admin Dashboard
+### Phase 6 – Production Deployment (Vercel + MongoDB)
+
+- **Goals**:
+  - Deploy the frontend and backend together as a serverless full-stack application.
+  - Switch from local ephemeral storage (SQLite) to a robust cloud database (MongoDB Atlas).
+  - Configure the application for zero-cost, serverless deployment on Vercel.
+
+- **Tasks**:
+  - **Database Migration**:
+    - Replace SQLAlchemy and SQLite with `motor` (async Python driver for MongoDB).
+    - Refactor repositories (`RestaurantRepository` and `FeedbackRepository`) to use MongoDB collections.
+  - **Project Restructuring**:
+    - Move frontend code and static assets to a `public/` directory.
+    - Move FastAPI backend code to an `api/` directory.
+    - Add an `api/index.py` entry point for Vercel's serverless Python runtime.
+    - Add a `vercel.json` routing configuration file to proxy `/api/*` to the Python backend and serve `public/` as static assets.
+  - **Dynamic API URLs**:
+    - Update the frontend (`api.js`) to dynamically detect its environment (localhost vs. Vercel deployment) so that API calls route properly without hardcoded ports.
+
+- **Outcome**:
+  - The application is a unified stack capable of being deployed seamlessly via a single Vercel integration.
+  - User feedback and restaurant data persist safely in MongoDB, surviving ephemeral serverless function lifecycles.
+
+### Phase 7 – Admin Dashboard
 
 - **Ideas**:
   - **Admin dashboard**:
     - See popular queries, top recommended restaurants, error rates.
 
-### Phase 7 – Advanced Features (Optional)
+### Phase 8 – Advanced Features (Optional)
 
 - **Ideas**:
   - **Geo-based search**:

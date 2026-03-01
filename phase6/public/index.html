@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="AI-powered restaurant recommendations tailored to your preferences — location, price, cuisine, and rating.">
+    <title>Dine AI — Smart Restaurant Recommendations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=1.6">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- ===== HEADER ===== -->
+        <header class="header" id="header">
+            <div class="header__inner">
+                <div class="header__brand" title="DineAI Home">
+                    <span class="header__icon">🎯</span>
+                    <h1 class="header__title">FOOD<span class="header__title--accent">REVIEW</span></h1>
+                </div>
+
+                <nav class="header__nav">
+                    <a href="#" class="nav-link" title="Discover top places">WHERE TO GO</a>
+                    <a href="#" class="nav-link" title="Explore custom curated lists">SPECIAL FEATURES</a>
+                    <a href="#" class="nav-link has-dropdown" title="Browse by type">CATEGORY <span
+                            class="chevron">▼</span></a>
+                </nav>
+
+                <div class="header__right">
+                    <!-- Google Sign-In Button Container -->
+                    <div id="googleSignInContainer"></div>
+
+                    <!-- Authenticated User Profile (Hidden by default) -->
+                    <div class="user-profile hidden" id="userProfile" title="Signed in with Google">
+                        <img src="" alt="User Avatar" class="avatar" id="userAvatar">
+                        <div class="avatar-initials hidden" id="userAvatarInitials"></div>
+                        <div class="user-info">
+                            <span class="user-name" id="userNameDisplay"></span>
+                            <span class="user-role" id="userEmailDisplay"></span>
+                        </div>
+                        <button id="signOutBtn" title="Sign Out" class="sign-out-btn">
+                            <span style="font-size:1.2rem;">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="main" id="main">
+            <!-- FILTER PANEL -->
+            <section class="filters" id="filtersSection">
+                <div class="filters__header">
+                    <h2 class="filters__title">🔍 Find Your Perfect Meal</h2>
+                    <button class="filters__collapse-btn" id="filtersCollapseBtn" aria-label="Toggle filters">
+                        <span class="filters__collapse-icon">▲</span>
+                    </button>
+                </div>
+
+                <form class="filters__form" id="filtersForm">
+                    <!-- Location -->
+                    <div class="form-group" style="position: relative;">
+                        <label class="form-label" for="locationInput">📍 Location</label>
+                        <div class="input-wrapper">
+                            <input type="text" class="form-input" id="locationInput"
+                                placeholder="Search for a location... (e.g. Jayanagar)" autocomplete="off">
+                            <span class="input-chevron">▼</span>
+                        </div>
+                        <ul class="autocomplete-dropdown hidden" id="locationDropdown"></ul>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="form-group">
+                        <label class="form-label">💰 Price Range</label>
+                        <div class="btn-group" id="priceGroup">
+                            <button type="button" class="btn-group__btn" data-value="low">$ Low</button>
+                            <button type="button" class="btn-group__btn btn-group__btn--active" data-value="mid">$$
+                                Mid</button>
+                            <button type="button" class="btn-group__btn" data-value="high">$$$ High</button>
+                        </div>
+                    </div>
+
+                    <!-- Minimum Rating -->
+                    <div class="form-group">
+                        <label class="form-label" for="ratingSlider">⭐ Minimum Rating: <span class="rating-value"
+                                id="ratingValue">3.5</span></label>
+                        <input type="range" class="form-slider" id="ratingSlider" min="0" max="5" step="0.5"
+                            value="3.5">
+                        <div class="slider-labels">
+                            <span>0</span>
+                            <span>1</span>
+                            <span>2</span>
+                            <span>3</span>
+                            <span>4</span>
+                            <span>5</span>
+                        </div>
+                    </div>
+
+                    <!-- Cuisine -->
+                    <div class="form-group" style="position: relative;">
+                        <label class="form-label" for="cuisineInput">🍕 Cuisine</label>
+                        <div class="input-wrapper">
+                            <input type="text" class="form-input" id="cuisineInput"
+                                placeholder="e.g. Italian, Chinese, North Indian" autocomplete="off">
+                            <span class="input-chevron">▼</span>
+                        </div>
+                        <ul class="autocomplete-dropdown hidden" id="cuisineDropdown"></ul>
+                    </div>
+
+                    <!-- Removed Manual User ID Input for Google Auth Integration -->
+
+                    <!-- Submit -->
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <span class="btn-primary__text">Get Recommendations</span>
+                        <span class="btn-primary__icon">→</span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- RESULTS SECTION -->
+            <section class="results" id="resultsSection">
+                <!-- Initial empty state -->
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-state__icon">🍴</div>
+                    <h3 class="empty-state__title">Ready to discover?</h3>
+                    <p class="empty-state__text">Set your preferences and hit <strong>"Get Recommendations"</strong> to
+                        find
+                        your next favorite restaurant.</p>
+                </div>
+
+                <!-- Loading state (hidden by default) -->
+                <div class="loading-state hidden" id="loadingState">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Finding the best restaurants for you…</p>
+                </div>
+
+                <!-- Error state (hidden by default) -->
+                <div class="error-state hidden" id="errorState">
+                    <div class="error-state__icon">⚠️</div>
+                    <h3 class="error-state__title">Something went wrong</h3>
+                    <p class="error-state__text" id="errorMessage">Could not reach the server. Please try again.</p>
+                    <button class="btn-secondary" id="retryBtn">Retry</button>
+                </div>
+
+                <!-- LLM Summary (hidden by default) -->
+                <div class="llm-summary hidden" id="llmSummary">
+                    <div class="llm-summary__badge">✨ AI Summary</div>
+                    <p class="llm-summary__text" id="llmSummaryText"></p>
+                </div>
+
+                <!-- Results count -->
+                <div class="results-meta hidden" id="resultsMeta">
+                    <span class="results-count" id="resultsCount"></span>
+                </div>
+
+                <!-- Restaurant cards grid -->
+                <div class="cards-grid" id="cardsGrid"></div>
+
+                <!-- No results state (hidden by default) -->
+                <div class="no-results hidden" id="noResults">
+                    <div class="no-results__icon">😕</div>
+                    <h3 class="no-results__title">No restaurants found</h3>
+                    <p class="no-results__text">Try broadening your filters — maybe a wider location or lower minimum
+                        rating.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ===== TOAST NOTIFICATION ===== -->
+    <div class="toast hidden" id="toast">
+        <span class="toast__icon" id="toastIcon">✅</span>
+        <span class="toast__message" id="toastMessage"></span>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <p>Built with ❤️ using FastAPI + Groq AI &nbsp;|&nbsp; Phase 5 Frontend</p>
+    </footer>
+
+    <!-- ===== SCRIPTS (modular) ===== -->
+    <script src="js/api.js?v=1.6"></script>
+    <script src="js/ui.js?v=1.6"></script>
+    <script src="js/app.js?v=1.6"></script>
+</body>
+
+</html>
