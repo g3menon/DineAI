@@ -15,7 +15,7 @@ from httpx import AsyncClient, ASGITransport
 async def test_full_user_flow():
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         # 1. Health check
-        response_health = await client.get("/health")
+        response_health = await client.get("/api/health")
         assert response_health.status_code == 200
         
         # 2. Config check for UI Google Sign-in to ensure backend passes variables reliably

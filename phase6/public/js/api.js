@@ -97,7 +97,7 @@ async function submitFeedback({ user_id, restaurant_name, liked }) {
  */
 async function checkHealth() {
     try {
-        const response = await fetch(`${API_BASE_URL}/health`);
+        const response = await fetch(`${API_BASE_URL}/api/health`);
         if (!response.ok) return false;
         const data = await response.json();
         return data.status === "ok";

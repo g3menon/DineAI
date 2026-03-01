@@ -265,7 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
             window.DineUI.renderResults(data, payload.user_id);
         } catch (err) {
             console.error("Recommendation fetch failed:", err);
-            window.DineUI.showError(err.message || "Could not reach the server. Is the backend running on port 8004?");
+            window.DineUI.showError(err.message || "Could not reach the server. Please check your connection.");
         }
     }
 
@@ -274,7 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Quick health check to warm up and give early feedback
     window.DineAPI.checkHealth().then((ok) => {
         if (!ok) {
-            window.DineUI.showToast("⚠️", "Backend not reachable at localhost:8004. Start the server first.");
+            window.DineUI.showToast("⚠️", "Backend APIs are currently unreachable.");
         }
     });
 });

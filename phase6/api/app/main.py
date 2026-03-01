@@ -25,7 +25,7 @@ def create_app() -> FastAPI:
     async def on_startup() -> None:
         init_db()
 
-    @app.get("/health")
+    @app.get("/api/health")
     async def health_check():
         return {"status": "ok"}
 
