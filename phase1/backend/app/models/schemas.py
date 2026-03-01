@@ -1,0 +1,61 @@
+from typing import List, Optional
+
+from pydantic import BaseModel, Field, field_validator
+
+
+class RecommendationRequest(BaseModel):
+    """
+    Input from the client to request restaurant recommendations.
+    """
+
+    location: str = Field(..., description="City or area, e.g. 'Bangalore'")
+    price_range: str = Field(
+        ...,
+        description="Price band: 'low', 'mid', or 'high'",
+        pattern="^(low|mid|high)$",
+    )
+    min_rating: float = Field(
+        0.0,
+        ge=0.0,
+        le=5.0,
+        description="Minimum acceptable rating on a 0–5 scale.",
+    )
+    cuisine: Optional[str] = Field(
+        None,
+        description="Preferred cuisine, e.g. 'Italian'. If omitted, no cuisine filter is applied.",
+    )
+
+    @field_validator("location")
+    def location_must_not_be_empty(cls, value: str) -> str:  # noqa: D417
+        if not value or not value.strip():
+            raise ValueError("location must not be empty")
+        return value.strip()
+
+    @field_validator("cuisine")
+    def normalize_cuisine(cls, value: Optional[str]) -> Optional[str]:  # noqa: D417
+        if value is None:
+            return value
+        cleaned = value.strip()
+        return cleaned if cleaned else None
+
+
+class RestaurantOut(BaseModel):
+    """
+    Restaurant representation returned to the client.
+    """
+
+    name: str
+    location: str
+    rating: float
+    price: float
+    cuisine: str
+    reason: str
+
+
+class RecommendationResponse(BaseModel):
+    """
+    Wrapper for the recommendations list.
+    """
+
+    results: List[RestaurantOut]
+

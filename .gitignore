@@ -1,0 +1,34 @@
+# 1. Environment variables & Secrets
+.env
+.env.*
+
+# 2. Virtual Environments
+.venv/
+.venv311/
+env/
+venv/
+
+# 3. Python Cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 4. Databases
+*.db
+*.sqlite3
+
+# 5. Testing caches (Note: Test files themselves are NOT ignored)
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 6. IDE / Editor Folders
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 7. OS generated files
+.DS_Store
+Thumbs.db
