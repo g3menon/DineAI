@@ -91,7 +91,7 @@ function showNoResults() {
  * @param {Object} data — API response with results, llm_summary, llm_used
  * @param {string|null} userId — current user ID (used for feedback)
  */
-function renderResults(data, userId) {
+function renderResults(data) {
     hideAllStates();
     resetSubmitButton();
 
@@ -117,7 +117,7 @@ function renderResults(data, userId) {
     grid.innerHTML = "";
 
     results.forEach((restaurant, index) => {
-        const card = createRestaurantCard(restaurant, index, userId);
+        const card = createRestaurantCard(restaurant, index);
         grid.appendChild(card);
     });
 }
@@ -130,7 +130,7 @@ function renderResults(data, userId) {
  * @param {string|null} userId — used for feedback calls
  * @returns {HTMLElement}
  */
-function createRestaurantCard(restaurant, index, userId) {
+function createRestaurantCard(restaurant, index) {
     const card = document.createElement("div");
     card.className = "card";
     card.style.animationDelay = `${index * 0.07}s`;
@@ -162,8 +162,8 @@ function createRestaurantCard(restaurant, index, userId) {
     const likeBtn = card.querySelector(".card__action-btn--like");
     const dislikeBtn = card.querySelector(".card__action-btn--dislike");
 
-    likeBtn.addEventListener("click", () => handleFeedback(restaurant.name, true, userId, likeBtn, dislikeBtn));
-    dislikeBtn.addEventListener("click", () => handleFeedback(restaurant.name, false, userId, dislikeBtn, likeBtn));
+    likeBtn.addEventListener("click", () => handleFeedback(restaurant.name, true, likeBtn, dislikeBtn));
+    dislikeBtn.addEventListener("click", () => handleFeedback(restaurant.name, false, dislikeBtn, likeBtn));
 
     return card;
 }
@@ -171,9 +171,10 @@ function createRestaurantCard(restaurant, index, userId) {
 /**
  * Handle feedback button click.
  */
-async function handleFeedback(restaurantName, liked, userId, activeBtn, otherBtn) {
+async function handleFeedback(restaurantName, liked, activeBtn, otherBtn) {
+    const userId = window.getGoogleUserId ? window.getGoogleUserId() : null;
     if (!userId) {
-        showToast("⚠️", "Enter a User ID to submit feedback");
+        showToast("⚠️", "Please sign in with Google to submit feedback");
         return;
     }
 

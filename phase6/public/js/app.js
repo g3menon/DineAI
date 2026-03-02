@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let selectedPriceRange = "mid";
     let lastPayload = null;
     let googleUserId = null;
+    // Expose globally so feedback buttons can always read the current signed-in user
+    window.getGoogleUserId = () => googleUserId;
 
     // ===== GOOGLE SIGN IN =====
     const googleSignInContainer = document.getElementById("googleSignInContainer");
@@ -262,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             const data = await window.DineAPI.fetchRecommendations(payload);
-            window.DineUI.renderResults(data, payload.user_id);
+            window.DineUI.renderResults(data);
         } catch (err) {
             console.error("Recommendation fetch failed:", err);
             window.DineUI.showError(err.message || "Could not reach the server. Please check your connection.");
