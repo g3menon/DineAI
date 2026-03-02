@@ -29,3 +29,7 @@ async def get_recommendations(
         return response
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        # Pass the exact exception to the frontend for easy diagnosis 
+        # (This is safe since it's a hobby project, and helps us trace Vercel 500s directly)
+        raise HTTPException(status_code=500, detail=repr(exc)) from exc
